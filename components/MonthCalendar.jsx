@@ -1,7 +1,8 @@
 'use client';
 import { useState } from 'react';
+import Link from 'next/link';
 
-export default function MonthCalendar({ events, renderEvent }) {
+export default function MonthCalendar({ events }) {
   const [monthOffset, setMonthOffset] = useState(0);
 
   const today = new Date();
@@ -45,7 +46,9 @@ export default function MonthCalendar({ events, renderEvent }) {
             <div key={dateKey} className={`cal-cell${dateKey === todayStr ? ' cal-today' : ''}`}>
               <div className="cal-daynum">{d}</div>
               {dayEvents.map(ev => (
-                <div key={ev.id} className="cal-event">{renderEvent(ev)}</div>
+                <div key={ev.id} className="cal-event">
+                  <Link href={ev.linkHref}>{ev.linkLabel}</Link>
+                </div>
               ))}
             </div>
           );
