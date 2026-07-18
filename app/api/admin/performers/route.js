@@ -20,12 +20,12 @@ export async function POST(request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
   const body = await request.json();
-  const { name, actType } = body;
-  if (!name || !actType) {
+  const { name } = body;
+  if (!name) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
   }
   try {
-    const performer = await addPerformer({ name, actType });
+    const performer = await addPerformer({ name });
     return NextResponse.json(performer, { status: 201 });
   } catch (err) {
     return NextResponse.json({ error: err.message }, { status: 500 });
