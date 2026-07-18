@@ -6,6 +6,25 @@ import Modal from './Modal';
 // opens the detail modal instead of hitting the embedded player's own
 // controls), status/flag badges, and water/air temp chips looked up from
 // the weather cache by town.
+
+// Derives a real preview image from the camera's own embed source, rather
+// than a flat placeholder gradient — WetMet exposes a separate snapshot
+// endpoint alongside their video widget, and YouTube auto-generates
+// thumbnails for any video at a predictable URL. Falls back to the
+// gradient scene when neither pattern matches.
+function getThumbnailUrl(cam) {
+  if (!cam.embed_url) return null;
+  const wetmetMatch = cam.embed_url.match(/wetmet\.net\/widgets\/stream\/frame\.php\?uid=([a-f0-9]+)/);
+  if (wetmetMatch) {
+    return `https://api.wetmet.net/widgets/image/frame.php?uid=${wetmetMatch[1]}&type=image&format=image.jpg`;
+  }
+  const youtubeMatch = cam.embed_url.match(/youtube\.com\/embed\/([a-zA-Z0-9_-]+)/);
+  if (youtubeMatch) {
+    return `https://img.youtube.com/vi/${youtubeMatch[1]}/hqdefault.jpg`;
+  }
+  return null;
+}
+
 export default function CamGrid({ cameras, weather = [] }) {
   const [hoveredId, setHoveredId] = useState(null);
   const [selected, setSelected] = useState(null);
@@ -20,6 +39,7 @@ export default function CamGrid({ cameras, weather = [] }) {
       <div id="grid-view">
         {cameras.map(cam => {
           const w = weatherFor(cam.town_id);
+          const thumb = getThumbnailUrl(cam);
           return (
             <div key={cam.id} className={`cam-card${cam.status === 'offline' ? ' offline' : ''}`}>
               <div
@@ -38,7 +58,10 @@ export default function CamGrid({ cameras, weather = [] }) {
                     allow="autoplay"
                   />
                 ) : (
-                  <div className="feed-scene" />
+                  <div
+                    className="feed-scene"
+                    style={thumb ? { backgroundImage: `url(${thumb})`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined}
+                  />
                 )}
 
                 {cam.embed_url && (
