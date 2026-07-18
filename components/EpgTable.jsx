@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import Modal from './Modal';
+import { formatTimeRange } from '@/lib/format';
 
 // Groups flat event rows (as returned by /api/events) back into a
 // venue -> day grid. The date math is trivial now because events carry
@@ -40,9 +41,9 @@ export default function EpgTable({ events, venues, weekStart }) {
                 <td className="venue-cell" style={{ borderLeft: `3px solid ${v.accent_color}`, cursor: 'pointer' }}
                   onClick={() => setSelectedVenue(v)}>
                   <div className="venue-name">{v.name}</div>
-<div style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-mid)', marginTop: 2 }}>
-  {v.address ? v.address.split(',').slice(-2, -1)[0]?.trim() : ''}
-</div>
+                  <div style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-mid)', marginTop: 2 }}>
+                    {v.address ? v.address.split(',').slice(-2, -1)[0]?.trim() : ''}
+                  </div>
                 </td>
                 {days.map(day => {
                   const dayStr = day.toISOString().slice(0, 10);
@@ -53,7 +54,7 @@ export default function EpgTable({ events, venues, weekStart }) {
                         ? gigs.map(g => (
                             <div className="gig" key={g.id}>
                               <div className="gig-performer">{g.performer_name}</div>
-                              <div className="gig-time">{g.start_time?.slice(0, 5)}–{g.end_time?.slice(0, 5)}</div>
+                              <div className="gig-time">{formatTimeRange(g.start_time, g.end_time)}</div>
                               <span className="gig-type">{g.act_type}</span>
                             </div>
                           ))
