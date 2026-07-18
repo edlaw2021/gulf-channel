@@ -40,6 +40,9 @@ export default function EpgTable({ events, venues, weekStart }) {
                 <td className="venue-cell" style={{ borderLeft: `3px solid ${v.accent_color}`, cursor: 'pointer' }}
                   onClick={() => setSelectedVenue(v)}>
                   <div className="venue-name">{v.name}</div>
+<div style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-mid)', marginTop: 2 }}>
+  {v.address ? v.address.split(',').slice(-2, -1)[0]?.trim() : ''}
+</div>
                 </td>
                 {days.map(day => {
                   const dayStr = day.toISOString().slice(0, 10);
