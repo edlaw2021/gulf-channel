@@ -1,5 +1,6 @@
 import { getTowns, getCameras, getVenues, getEventsForWeek, getWeatherCache } from '@/lib/queries';
 import HomeClient from '@/components/HomeClient';
+export const dynamic = 'force-dynamic';
 
 // Server component: all initial data is fetched here, server-side, before
 // anything reaches the browser. Filtering/view-toggling/week-nav state then
