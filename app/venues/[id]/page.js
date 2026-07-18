@@ -7,7 +7,13 @@ export default async function VenuePage({ params }) {
   const venue = await getVenueById(params.id);
   if (!venue) return notFound();
 
-  const events = await getEventsForVenue(params.id);
+  const rawEvents = await getEventsForVenue(params.id);
+  const events = rawEvents.map(ev => ({
+    ...ev,
+    linkHref: `/performers/${ev.performer_id}`,
+    linkLabel: ev.performer_name,
+  }));
+
   const mapSrc = venue.address
     ? `https://www.google.com/maps?q=${encodeURIComponent(venue.address)}&output=embed`
     : null;
@@ -60,12 +66,7 @@ export default async function VenuePage({ params }) {
       <h2 style={{ fontFamily: 'var(--display)', fontSize: 18, fontWeight: 600, color: 'var(--ink)', margin: '2rem 0 0.8rem' }}>
         Shows at {venue.name}
       </h2>
-      <MonthCalendar
-        events={events}
-        renderEvent={ev => (
-          <Link href={`/performers/${ev.performer_id}`}>{ev.performer_name}</Link>
-        )}
-      />
+      <MonthCalendar events={events} />
     </main>
   );
 }
