@@ -1,5 +1,6 @@
 'use client';
 import { useRef, useState } from 'react';
+import { formatTimeRange } from '@/lib/format';
 
 // Mobile equivalent of EpgTable: one day at a time with a day switcher,
 // instead of a 7-column table that needs horizontal scrolling. Includes
@@ -60,7 +61,7 @@ export default function EpgMobileAgenda({ events, weekStart, onChangeWeek }) {
                     <div className="agenda-gig" key={g.id}>
                       <div>
                         <div className="gig-performer">{g.performer_name}</div>
-                        <div className="gig-time">{g.start_time?.slice(0, 5)}–{g.end_time?.slice(0, 5)}</div>
+                        <div className="gig-time">{formatTimeRange(g.start_time, g.end_time)}</div>
                       </div>
                       <span className="gig-type">{g.act_type}</span>
                     </div>
