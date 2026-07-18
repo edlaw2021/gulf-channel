@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Modal from './Modal';
 
 // Derives a real preview image from the camera's own embed source, rather
@@ -25,6 +25,8 @@ export default function CamGrid({ cameras, weather = [] }) {
   const [loadedId, setLoadedId] = useState(null);
   const [selected, setSelected] = useState(null);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const modalFeedRef = useRef(null);
 
   function weatherFor(townId) {
     return weather.find(w => w.town_id === townId);
@@ -33,6 +35,27 @@ export default function CamGrid({ cameras, weather = [] }) {
   function handleLeave() {
     setHoveredId(null);
     setLoadedId(null);
+  }
+
+  // The browser's Fullscreen API binds Escape to exit automatically —
+  // we only need to track state (for swapping the icon) and trigger
+  // entering fullscreen ourselves; exiting via ESC needs no extra code.
+  useEffect(() => {
+    function handleChange() {
+      setIsFullscreen(!!document.fullscreenElement);
+    }
+    document.addEventListener('fullscreenchange', handleChange);
+    return () => document.removeEventListener('fullscreenchange', handleChange);
+  }, []);
+
+  function toggleFullscreen() {
+    const el = modalFeedRef.current;
+    if (!el) return;
+    if (!document.fullscreenElement) {
+      (el.requestFullscreen || el.webkitRequestFullscreen)?.call(el);
+    } else {
+      (document.exitFullscreen || document.webkitExitFullscreen)?.call(document);
+    }
   }
 
   return (
@@ -55,10 +78,6 @@ export default function CamGrid({ cameras, weather = [] }) {
                   <div className="static-bg" />
                 ) : (
                   <>
-                    {/* Thumbnail stays mounted underneath at all times, so
-                        there's never a blank gap while the video loads —
-                        the video crossfades in on top of it instead of
-                        replacing it outright. */}
                     <div
                       className="feed-scene"
                       style={thumb ? { backgroundImage: `url(${thumb})`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined}
@@ -118,8 +137,19 @@ export default function CamGrid({ cameras, weather = [] }) {
       <Modal open={!!selected} onClose={() => setSelected(null)}>
         {selected && (
           <>
-            <div className="feed" style={{ aspectRatio: '16/9', marginBottom: '0.9rem' }}>
+            <div
+              className="feed"
+              ref={modalFeedRef}
+              style={{ aspectRatio: '16/9', marginBottom: '0.9rem', position: 'relative', background: '#000' }}
+            >
               <iframe className="live-embed" src={selected.embed_url} title={selected.name} allow="autoplay" />
+              <button
+                className="fullscreen-btn"
+                onClick={toggleFullscreen}
+                title={isFullscreen ? 'Exit full screen (Esc)' : 'Full screen'}
+              >
+                {isFullscreen ? '⤡' : '⤢'}
+              </button>
             </div>
             <div className="modal-title">{selected.name}</div>
             <div className="modal-cat">{selected.loc}</div>
