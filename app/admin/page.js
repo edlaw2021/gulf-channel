@@ -9,9 +9,9 @@ export default function AdminPage() {
   const [addingNewPerformer, setAddingNewPerformer] = useState(false);
 
   const [form, setForm] = useState({
-    venueId: '', date: '', startTime: '', endTime: '', performerId: '',
+    venueId: '', date: '', startTime: '', endTime: '', performerId: '', actType: 'band',
   });
-  const [newPerformer, setNewPerformer] = useState({ name: '', actType: 'band' });
+  const [newPerformerName, setNewPerformerName] = useState('');
 
   useEffect(() => {
     fetch('/api/venues').then(r => r.json()).then(setVenues);
@@ -28,7 +28,7 @@ export default function AdminPage() {
       const perfRes = await fetch('/api/admin/performers', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-admin-password': password },
-        body: JSON.stringify(newPerformer),
+        body: JSON.stringify({ name: newPerformerName }),
       });
       if (!perfRes.ok) { setStatus('error'); return; }
       const created = await perfRes.json();
@@ -43,7 +43,7 @@ export default function AdminPage() {
     setStatus(res.ok ? 'saved' : 'error');
     if (res.ok) {
       setForm({ ...form, performerId: '' });
-      setNewPerformer({ name: '', actType: 'band' });
+      setNewPerformerName('');
       setAddingNewPerformer(false);
       fetch('/api/admin/performers').then(r => r.json()).then(setPerformers);
     }
@@ -110,29 +110,28 @@ export default function AdminPage() {
                 required={!addingNewPerformer}>
                 <option value="">Select performer…</option>
                 {performers.map(p => (
-                  <option key={p.id} value={p.id}>{p.name} ({p.act_type})</option>
+                  <option key={p.id} value={p.id}>{p.name}</option>
                 ))}
               </select>
             </label>
           ) : (
-            <div style={styles.row}>
-              <label style={{ ...styles.label, flex: 2 }}>
-                Performer name
-                <input type="text" style={styles.input} value={newPerformer.name}
-                  onChange={e => setNewPerformer({ ...newPerformer, name: e.target.value })}
-                  required={addingNewPerformer} />
-              </label>
-              <label style={{ ...styles.label, flex: 1 }}>
-                Act size
-                <select style={styles.input} value={newPerformer.actType}
-                  onChange={e => setNewPerformer({ ...newPerformer, actType: e.target.value })}>
-                  <option value="solo">Solo</option>
-                  <option value="duo">Duo</option>
-                  <option value="band">Band</option>
-                </select>
-              </label>
-            </div>
+            <label style={styles.label}>
+              Performer name
+              <input type="text" style={styles.input} value={newPerformerName}
+                onChange={e => setNewPerformerName(e.target.value)}
+                required={addingNewPerformer} />
+            </label>
           )}
+
+          <label style={styles.label}>
+            Act size for this booking
+            <select style={styles.input} value={form.actType}
+              onChange={e => setForm({ ...form, actType: e.target.value })}>
+              <option value="solo">Solo</option>
+              <option value="duo">Duo</option>
+              <option value="band">Band</option>
+            </select>
+          </label>
 
           <button type="submit" style={styles.submit} disabled={status === 'saving'}>
             {status === 'saving' ? 'Saving…' : 'Save booking'}
