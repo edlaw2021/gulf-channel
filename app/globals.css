@@ -153,6 +153,7 @@ main{max-width:1280px; margin:0 auto; padding:0.8rem 1.5rem 2rem;}
 @media (max-width:520px){
   #grid-view{grid-template-columns:1fr;}
   .epg-desktop-only{display:none;}
+   .epg-mobile{display:block;}
 }
 .row-even{background:var(--panel);}
 .row-odd{background:var(--panel-2);}
