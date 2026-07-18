@@ -7,7 +7,12 @@ export default async function PerformerPage({ params }) {
   const performer = await getPerformerById(params.id);
   if (!performer) return notFound();
 
-  const events = await getEventsForPerformer(params.id);
+  const rawEvents = await getEventsForPerformer(params.id);
+  const events = rawEvents.map(ev => ({
+    ...ev,
+    linkHref: `/venues/${ev.venue_id}`,
+    linkLabel: `${ev.venue_name} (${ev.act_type})`,
+  }));
 
   return (
     <main style={{ maxWidth: 720, margin: '0 auto', padding: '2rem 1.5rem' }}>
@@ -31,12 +36,7 @@ export default async function PerformerPage({ params }) {
       <h2 style={{ fontFamily: 'var(--display)', fontSize: 18, fontWeight: 600, color: 'var(--ink)', margin: '1rem 0 0.8rem' }}>
         Where {performer.name} is playing
       </h2>
-      <MonthCalendar
-        events={events}
-        renderEvent={ev => (
-          <Link href={`/venues/${ev.venue_id}`}>{ev.venue_name} ({ev.act_type})</Link>
-        )}
-      />
+      <MonthCalendar events={events} />
     </main>
   );
 }
