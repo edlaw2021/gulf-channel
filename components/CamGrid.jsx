@@ -2,11 +2,6 @@
 import { useState } from 'react';
 import Modal from './Modal';
 
-// Full version: hover-to-play, refresh button, click-catcher (so a click
-// opens the detail modal instead of hitting the embedded player's own
-// controls), status/flag badges, and water/air temp chips looked up from
-// the weather cache by town.
-
 // Derives a real preview image from the camera's own embed source, rather
 // than a flat placeholder gradient — WetMet exposes a separate snapshot
 // endpoint alongside their video widget, and YouTube auto-generates
@@ -27,11 +22,17 @@ function getThumbnailUrl(cam) {
 
 export default function CamGrid({ cameras, weather = [] }) {
   const [hoveredId, setHoveredId] = useState(null);
+  const [loadedId, setLoadedId] = useState(null);
   const [selected, setSelected] = useState(null);
   const [refreshKey, setRefreshKey] = useState(0);
 
   function weatherFor(townId) {
     return weather.find(w => w.town_id === townId);
+  }
+
+  function handleLeave() {
+    setHoveredId(null);
+    setLoadedId(null);
   }
 
   return (
@@ -40,28 +41,40 @@ export default function CamGrid({ cameras, weather = [] }) {
         {cameras.map(cam => {
           const w = weatherFor(cam.town_id);
           const thumb = getThumbnailUrl(cam);
+          const isHovered = hoveredId === cam.id;
+          const isLoaded = loadedId === cam.id;
+
           return (
             <div key={cam.id} className={`cam-card${cam.status === 'offline' ? ' offline' : ''}`}>
               <div
                 className="feed"
                 onMouseEnter={() => setHoveredId(cam.id)}
-                onMouseLeave={() => setHoveredId(null)}
+                onMouseLeave={handleLeave}
               >
                 {cam.status === 'offline' ? (
                   <div className="static-bg" />
-                ) : cam.embed_url && hoveredId === cam.id ? (
-                  <iframe
-                    key={refreshKey}
-                    className="live-embed"
-                    src={cam.embed_url}
-                    title={`${cam.name} live feed`}
-                    allow="autoplay"
-                  />
                 ) : (
-                  <div
-                    className="feed-scene"
-                    style={thumb ? { backgroundImage: `url(${thumb})`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined}
-                  />
+                  <>
+                    {/* Thumbnail stays mounted underneath at all times, so
+                        there's never a blank gap while the video loads —
+                        the video crossfades in on top of it instead of
+                        replacing it outright. */}
+                    <div
+                      className="feed-scene"
+                      style={thumb ? { backgroundImage: `url(${thumb})`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined}
+                    />
+                    {cam.embed_url && isHovered && (
+                      <iframe
+                        key={refreshKey}
+                        className="live-embed"
+                        src={cam.embed_url}
+                        title={`${cam.name} live feed`}
+                        allow="autoplay"
+                        onLoad={() => setLoadedId(cam.id)}
+                        style={{ opacity: isLoaded ? 1 : 0, transition: 'opacity 0.5s ease' }}
+                      />
+                    )}
+                  </>
                 )}
 
                 {cam.embed_url && (
@@ -74,10 +87,10 @@ export default function CamGrid({ cameras, weather = [] }) {
                 </div>
                 <div className="cam-id">{cam.id}</div>
 
-                {cam.embed_url && hoveredId === cam.id && (
+                {cam.embed_url && isHovered && (
                   <button
                     className="refresh-btn"
-                    onClick={e => { e.stopPropagation(); setRefreshKey(k => k + 1); }}
+                    onClick={e => { e.stopPropagation(); setLoadedId(null); setRefreshKey(k => k + 1); }}
                   >
                     ↻
                   </button>
