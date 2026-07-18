@@ -62,12 +62,12 @@ export default function HomeClient({ towns, cameras, venues, events, weather, in
           : <CamMap cameras={filteredCameras} />}
 
         <section className="music-section">
-          <div className="music-heading" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.9rem' }}>
-            <div className="music-title" style={{ fontFamily: 'var(--display)', fontWeight: 600, fontSize: 20 }}>
-              Live Music This Week
-            </div>
-            <WeekNav weekStart={weekStart} onChangeWeek={changeWeek} contentRef={contentRef} />
-          </div>
+         <div className="music-heading" style={{ display: 'flex', flexDirection: 'column', marginBottom: '0.9rem' }}>
+  <div className="music-title" style={{ fontFamily: 'var(--display)', fontWeight: 600, fontSize: 20 }}>
+    Live Music This Week
+  </div>
+  <WeekNav weekStart={weekStart} onChangeWeek={changeWeek} contentRef={contentRef} />
+</div>
 
           <div className="epg-clip">
             <div className="epg-week-content" ref={contentRef}>
