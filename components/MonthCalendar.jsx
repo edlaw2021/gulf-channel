@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import Link from 'next/link';
+import { formatTimeRange } from '@/lib/format';
 
 export default function MonthCalendar({ events }) {
   const [monthOffset, setMonthOffset] = useState(0);
@@ -45,11 +46,19 @@ export default function MonthCalendar({ events }) {
           return (
             <div key={dateKey} className={`cal-cell${dateKey === todayStr ? ' cal-today' : ''}`}>
               <div className="cal-daynum">{d}</div>
-              {dayEvents.map(ev => (
-                <div key={ev.id} className="cal-event">
-                  <Link href={ev.linkHref}>{ev.linkLabel}</Link>
+              {dayEvents.length > 0 && (
+                <div className="gig-stack">
+                  {dayEvents.map(ev => (
+                    <Link key={ev.id} href={ev.linkHref} style={{ textDecoration: 'none', color: 'inherit' }}>
+                      <div className="gig">
+                        <div className="gig-performer">{ev.linkLabel}</div>
+                        <div className="gig-time">{formatTimeRange(ev.start_time, ev.end_time)}</div>
+                        <span className="gig-type">{ev.act_type}</span>
+                      </div>
+                    </Link>
+                  ))}
                 </div>
-              ))}
+              )}
             </div>
           );
         })}
