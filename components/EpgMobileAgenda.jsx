@@ -1,10 +1,8 @@
 'use client';
 import { useRef, useState } from 'react';
+import Link from 'next/link';
 import { formatTimeRange } from '@/lib/format';
 
-// Mobile equivalent of EpgTable: one day at a time with a day switcher,
-// instead of a 7-column table that needs horizontal scrolling. Includes
-// the same swipe-to-change-week gesture from the prototype.
 export default function EpgMobileAgenda({ events, weekStart, onChangeWeek }) {
   const [selectedDay, setSelectedDay] = useState(0);
   const touchStart = useRef(null);
@@ -49,18 +47,24 @@ export default function EpgMobileAgenda({ events, weekStart, onChangeWeek }) {
           const gigs = events.filter(e => e.venue_id === venueId && e.date.slice(0, 10) === dayStr);
           return (
             <div className="agenda-venue" key={venueId}>
-              <div className="agenda-venue-head">
-                <div className="agenda-badge" style={{ background: venueEvent.accent_color }}>
-                  {venueEvent.venue_name.slice(0, 2).toUpperCase()}
+              <Link href={`/venues/${venueId}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                <div className="agenda-venue-head">
+                  <div className="agenda-badge" style={{ background: venueEvent.accent_color }}>
+                    {venueEvent.venue_name.slice(0, 2).toUpperCase()}
+                  </div>
+                  <div className="agenda-venue-name">{venueEvent.venue_name}</div>
                 </div>
-                <div className="agenda-venue-name">{venueEvent.venue_name}</div>
-              </div>
+              </Link>
               {gigs.length ? (
                 <div className="agenda-gigs">
                   {gigs.map(g => (
                     <div className="agenda-gig" key={g.id}>
                       <div>
-                        <div className="gig-performer">{g.performer_name}</div>
+                        <div className="gig-performer">
+                          <Link href={`/performers/${g.performer_id}`} style={{ color: 'inherit', textDecoration: 'none' }}>
+                            {g.performer_name}
+                          </Link>
+                        </div>
                         <div className="gig-time">{formatTimeRange(g.start_time, g.end_time)}</div>
                       </div>
                       <span className="gig-type">{g.act_type}</span>
