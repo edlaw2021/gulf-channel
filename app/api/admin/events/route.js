@@ -11,14 +11,14 @@ export async function POST(request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
   const body = await request.json();
-  const { venueId, performerId, date, startTime, endTime } = body;
+  const { venueId, performerId, actType, date, startTime, endTime } = body;
 
-  if (!venueId || !performerId || !date) {
+  if (!venueId || !performerId || !actType || !date) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
   }
 
   try {
-    const event = await addEvent({ venueId, performerId, date, startTime, endTime });
+    const event = await addEvent({ venueId, performerId, actType, date, startTime, endTime });
     return NextResponse.json(event, { status: 201 });
   } catch (err) {
     return NextResponse.json({ error: err.message }, { status: 500 });
