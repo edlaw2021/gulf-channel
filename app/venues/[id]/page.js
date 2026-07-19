@@ -24,6 +24,14 @@ export default async function VenuePage({ params }) {
         &larr; Back to Gulf Channel
       </Link>
 
+      {venue.photo_url && (
+        <img
+          src={venue.photo_url}
+          alt={venue.name}
+          style={{ width: '100%', aspectRatio: '16/9', objectFit: 'cover', borderRadius: 12, marginTop: '1rem' }}
+        />
+      )}
+
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.9rem', margin: '1.2rem 0' }}>
         {venue.logo_url ? (
           <img src={venue.logo_url} alt={venue.name}
