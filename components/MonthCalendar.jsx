@@ -50,10 +50,10 @@ export default function MonthCalendar({ events }) {
                 <div className="gig-stack">
                   {dayEvents.map(ev => (
                     <Link key={ev.id} href={ev.linkHref} style={{ textDecoration: 'none', color: 'inherit' }}>
-                      <div className="gig">
+                      <div className={`gig${ev.status === 'cancelled' ? ' cancelled' : ''}`}>
                         <div className="gig-performer">{ev.linkLabel}</div>
                         <div className="gig-time">{formatTimeRange(ev.start_time, ev.end_time)}</div>
-                        <span className="gig-type">{ev.act_type}</span>
+                        <span className="gig-type">{ev.status === 'cancelled' ? 'Cancelled' : ev.act_type}</span>
                       </div>
                     </Link>
                   ))}
