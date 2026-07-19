@@ -58,7 +58,7 @@ export default function EpgMobileAgenda({ events, weekStart, onChangeWeek }) {
               {gigs.length ? (
                 <div className="agenda-gigs">
                   {gigs.map(g => (
-                    <div className="agenda-gig" key={g.id}>
+                    <div className={`agenda-gig${g.status === 'cancelled' ? ' cancelled' : ''}`} key={g.id}>
                       <div>
                         <div className="gig-performer">
                           <Link href={`/performers/${g.performer_id}`} style={{ color: 'inherit', textDecoration: 'none' }}>
@@ -67,7 +67,7 @@ export default function EpgMobileAgenda({ events, weekStart, onChangeWeek }) {
                         </div>
                         <div className="gig-time">{formatTimeRange(g.start_time, g.end_time)}</div>
                       </div>
-                      <span className="gig-type">{g.act_type}</span>
+                      <span className="gig-type">{g.status === 'cancelled' ? 'Cancelled' : g.act_type}</span>
                     </div>
                   ))}
                 </div>
