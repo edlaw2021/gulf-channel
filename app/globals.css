@@ -132,6 +132,12 @@ main{max-width:1280px; margin:0 auto; padding:0.8rem 1.5rem 2rem;}
 .gig-time{font-family:var(--mono); font-size:9.5px; color:var(--ink-mid);}
 .gig-type{display:inline-block; margin-top:5px; font-family:var(--mono); font-size:8.5px; text-transform:uppercase; padding:1.5px 5px; border-radius:3px; color:#fff; background:var(--teal);}
 .gig-empty{font-family:var(--mono); font-size:10px; color:var(--ink-dim); text-align:center;}
+.gig.cancelled{opacity:0.65; background:var(--panel);}
+.gig.cancelled .gig-performer{text-decoration:line-through; color:var(--ink-dim);}
+.gig.cancelled .gig-type{background:var(--flag-red);}
+.agenda-gig.cancelled{opacity:0.65;}
+.agenda-gig.cancelled .gig-performer{text-decoration:line-through; color:var(--ink-dim);}
+.agenda-gig.cancelled .gig-type{background:var(--flag-red);}
 .week-nav{display:flex; align-items:center; gap:0.4rem;}
 .week-nav-btn{width:34px; height:34px; border-radius:50%; border:1px solid var(--border); background:var(--panel); cursor:pointer; font-size:16px;}
 .epg-clip{overflow:hidden;}
