@@ -53,4 +53,58 @@ export default function HomeClient({ towns, cameras, venues, events: initialEven
   const filteredEvents = events.filter(e => filteredVenues.some(v => v.id === e.venue_id));
 
   async function changeWeek(delta) {
-    const newWeek =
+    const newWeek = addDays(weekStart, delta * 7);
+    setWeekStart(newWeek);
+
+    const cached = cacheRef.current[newWeek];
+    if (cached) {
+      setEvents(cached);
+    } else {
+      const data = await fetchWeek(newWeek);
+      if (data) setEvents(data);
+    }
+
+    prefetchNextWeek(newWeek);
+  }
+
+  return (
+    <>
+      <div className="controls">
+        <TownPills towns={towns} onSelect={setActiveTown} />
+      </div>
+      <div className="controls" style={{ justifyContent: 'flex-end' }}>
+        <div className="right-col">
+          <div className="view-toggle">
+            <button className={view === 'grid' ? 'active' : ''} onClick={() => setView('grid')}>Grid</button>
+            <button className={view === 'map' ? 'active' : ''} onClick={() => setView('map')}>Map</button>
+          </div>
+          <CategoryPills onSelect={setActiveCategory} />
+        </div>
+      </div>
+
+      <main>
+        {view === 'grid'
+          ? <CamGrid cameras={filteredCameras} weather={weather} />
+          : <CamMap cameras={filteredCameras} />}
+
+        <section className="music-section">
+          <div className="music-heading" style={{ display: 'flex', flexDirection: 'column', marginBottom: '0.9rem' }}>
+            <div className="music-title" style={{ fontFamily: 'var(--display)', fontWeight: 600, fontSize: 20 }}>
+              Live Music This Week
+            </div>
+            <WeekNav weekStart={weekStart} onChangeWeek={changeWeek} contentRef={contentRef} />
+          </div>
+
+          <div className="epg-clip">
+            <div className="epg-week-content" ref={contentRef}>
+              <div className="epg-desktop-only">
+                <EpgTable events={filteredEvents} venues={filteredVenues} weekStart={weekStart} />
+              </div>
+              <EpgMobileAgenda events={filteredEvents} weekStart={weekStart} onChangeWeek={changeWeek} />
+            </div>
+          </div>
+        </section>
+      </main>
+    </>
+  );
+}
