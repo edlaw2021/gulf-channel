@@ -20,14 +20,24 @@ export default async function PerformerPage({ params }) {
         &larr; Back to Gulf Channel
       </Link>
 
+      {performer.photo_url && (
+        <img
+          src={performer.photo_url}
+          alt={performer.name}
+          style={{ width: '100%', aspectRatio: '16/9', objectFit: 'cover', borderRadius: 12, marginTop: '1rem' }}
+        />
+      )}
+
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.9rem', margin: '1.2rem 0' }}>
-        <div style={{
-          width: 56, height: 56, borderRadius: '50%', background: 'var(--teal)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          color: '#fff', fontFamily: 'var(--display)', fontWeight: 600, fontSize: 18,
-        }}>
-          {performer.name.slice(0, 2).toUpperCase()}
-        </div>
+        {!performer.photo_url && (
+          <div style={{
+            width: 56, height: 56, borderRadius: '50%', background: 'var(--teal)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            color: '#fff', fontFamily: 'var(--display)', fontWeight: 600, fontSize: 18,
+          }}>
+            {performer.name.slice(0, 2).toUpperCase()}
+          </div>
+        )}
         <h1 style={{ fontFamily: 'var(--display)', fontSize: 26, fontWeight: 600, color: 'var(--ink)' }}>
           {performer.name}
         </h1>
