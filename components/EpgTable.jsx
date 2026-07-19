@@ -45,14 +45,14 @@ export default function EpgTable({ events, venues, weekStart }) {
                   <td key={day.toISOString()} className="gig-cell">
                     {gigs.length
                       ? gigs.map(g => (
-                          <div className="gig" key={g.id}>
+                          <div className={`gig${g.status === 'cancelled' ? ' cancelled' : ''}`} key={g.id}>
                             <div className="gig-performer">
                               <Link href={`/performers/${g.performer_id}`} style={{ color: 'inherit', textDecoration: 'none' }}>
                                 {g.performer_name}
                               </Link>
                             </div>
                             <div className="gig-time">{formatTimeRange(g.start_time, g.end_time)}</div>
-                            <span className="gig-type">{g.act_type}</span>
+                            <span className="gig-type">{g.status === 'cancelled' ? 'Cancelled' : g.act_type}</span>
                           </div>
                         ))
                       : <div className="gig-empty">—</div>}
